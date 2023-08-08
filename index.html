@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Barcode Generator</h1>
+    
+        <label for="type">Tipe Barcode:</label>
+        <select name="type" id="type">
+            <option value="code128">CODE128</option>
+            <option value="code128a">CODE128A</option>
+            <option value="code128b">CODE128B</option>
+            <option value="code128b">CODE128C</option>
+            <option value="code39">CODE39</option>
+            <option value="ean13">EAN13</option>
+            <option value="ean8">EAN8</option>
+            <option value="upc">UPC</option>
+            <option value="itf">ITF</option>
+            <option value="msi">MSI</option>
+        </select>
+        <label for="value">Nilai:</label>
+        <input type="text" id="value" name="value" maxlength="12">
+        <label for="font">Gaya Font:</label>
+        <input type="radio" name="font" id="fontBold" value="bold" checked>
+        <label for="font">Bold</label>
+        <input type="radio" name="font" id="fontItalic" value="italic">
+        <label for="font">Italic</label>
+    <svg class="barcode" id="myBarcode"
+    jsbarcode-format="upc"
+    jsbarcode-value="123456789012"
+    jsbarcode-textmargin="0"
+    jsbarcode-linecolor="#000"
+    jsbarcode-fontoptions="bold">
+    </svg>
+    <button id="changeAttributes">Preview</button>
+    <button id="downloadPdf">Unduh PDF</button>
+
+</body>
+
+<script src="JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const jsPDF = window.jspdf.jsPDF;
+    const svgElement = document.getElementById("myBarcode");
+    const changeAttributesButton = document.getElementById("changeAttributes");
+
+changeAttributesButton.addEventListener("click", function() {
+    const typeValue = document.getElementById("type").value;
+    const valueInput = document.getElementById("value").value;
+    const fontBold = document.getElementById("fontBold");
+    const fontItalic = document.getElementById("fontItalic");
+    const selectedFont = fontBold.checked ? fontBold.value : fontItalic.checked ? fontItalic.value : "";
+    svgElement.setAttribute("jsbarcode-format", typeValue);
+    svgElement.setAttribute("jsbarcode-value", valueInput);
+    svgElement.setAttribute("jsbarcode-textmargin", "10");
+    svgElement.setAttribute("jsbarcode-fontoptions", selectedFont);
+    JsBarcode(".barcode").init();
+});
+
+
+    
+    const downloadPdf = document.querySelector("#downloadPdf").addEventListener("click",function(){
+        const pdf = new jsPDF();
+        const svgElementData = new XMLSerializer().serializeToString(svgElement);
+        const canvas = document.createElement("canvas");
+        canvas.width = svgElement.width.baseVal.value;
+        canvas.height = svgElement.height.baseVal.value;
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+        img.src = "data:image/svg+xml;base64," + btoa(svgElementData);
+        img.onload = function() {
+        ctx.drawImage(img,0,0);
+        const imgData = canvas.toDataURL("image/png");
+        pdf.addImage(imgData, "PNG", 10, 10, 100, 60); // Menyesuaikan posisi dan ukuran
+        pdf.save("barcode.pdf");
+        };
+    })
+    
+</script>
+</html>
