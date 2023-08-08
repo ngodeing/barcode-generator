@@ -5,60 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barcode Generator</title>
     <link rel="stylesheet" href="style.css">
+    <script src="JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
     <h1>Barcode Generator</h1>
-    
-        <label for="type">Tipe Barcode:</label>
-        <select name="type" id="type">
-            <option value="code128">CODE128</option>
-            <option value="code128a">CODE128A</option>
-            <option value="code128b">CODE128B</option>
-            <option value="code128b">CODE128C</option>
-            <option value="code39">CODE39</option>
-            <option value="ean13">EAN13</option>
-            <option value="ean8">EAN8</option>
-            <option value="upc">UPC</option>
-            <option value="itf">ITF</option>
-            <option value="msi">MSI</option>
-        </select>
-        <label for="value">Nilai:</label>
-        <input type="text" id="value" name="value" maxlength="12">
-        <label for="font">Gaya Font:</label>
-        <input type="radio" name="font" id="fontBold" value="bold" checked>
-        <label for="font">Bold</label>
-        <input type="radio" name="font" id="fontItalic" value="italic">
-        <label for="font">Italic</label>
+    <div class="content">
+        <div class="input-barcode">
+            <label for="type">Tipe Barcode:</label>
+            <select name="type" id="type">
+                <option value="code128">CODE128</option>
+                <option value="code128a">CODE128A</option>
+                <option value="code128b">CODE128B</option>
+                <option value="code128b">CODE128C</option>
+                <option value="code39">CODE39</option>
+                <option value="ean13">EAN13</option>
+                <option value="ean8">EAN8</option>
+                <option value="upc">UPC</option>
+                <option value="itf">ITF</option>
+                <option value="msi">MSI</option>
+            </select>
+            <label for="value">Nilai:</label>
+            <input type="text" id="value" name="value" maxlength="12">
+            <label for="font">Bold</label>
+            <input type="radio" name="font" id="fontBold" value="bold" checked>
+            <label for="font">Italic</label>
+            <input type="radio" name="font" id="fontItalic" value="italic">
+            <br>
+            <button id="changeAttributes">Preview</button>
+            <button id="downloadPdf">Unduh PDF</button>
+            <button id="downloadJpg">Unduh JPG</button>
+        </div>
+            
+        <div class="preview">
+            <h2>Preview</h2>
+            <svg class="barcode" id="myBarcodeP"
+        jsbarcode-format="upc"
+        jsbarcode-value="123456789012"
+        jsbarcode-textmargin="0"
+        jsbarcode-linecolor="#000"
+        jsbarcode-fontoptions="bold">
+        </svg>
+        </div>
+    </div>
     <svg class="barcode" id="myBarcode"
-    jsbarcode-format="upc"
-    jsbarcode-value="123456789012"
-    jsbarcode-textmargin="0"
-    jsbarcode-linecolor="#000"
-    jsbarcode-fontoptions="bold">
-    </svg>
-    <button id="changeAttributes">Preview</button>
-    <button id="downloadPdf">Unduh PDF</button>
-
+        jsbarcode-format="upc"
+        jsbarcode-value="123456789012"
+        jsbarcode-textmargin="0"
+        jsbarcode-linecolor="#000"
+        jsbarcode-fontoptions="bold"
+        jsbarcode-fontsize="50"
+        jsbarcode-width="10"
+        jsbarcode-height="600">
+        </svg>
 </body>
 
-<script src="JsBarcode.all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script>
     const jsPDF = window.jspdf.jsPDF;
     const svgElement = document.getElementById("myBarcode");
+    const svgElementP = document.getElementById("myBarcodeP");
     const changeAttributesButton = document.getElementById("changeAttributes");
 
 changeAttributesButton.addEventListener("click", function() {
-    const typeValue = document.getElementById("type").value;
-    const valueInput = document.getElementById("value").value;
-    const fontBold = document.getElementById("fontBold");
-    const fontItalic = document.getElementById("fontItalic");
-    const selectedFont = fontBold.checked ? fontBold.value : fontItalic.checked ? fontItalic.value : "";
-    svgElement.setAttribute("jsbarcode-format", typeValue);
-    svgElement.setAttribute("jsbarcode-value", valueInput);
-    svgElement.setAttribute("jsbarcode-textmargin", "10");
-    svgElement.setAttribute("jsbarcode-fontoptions", selectedFont);
-    JsBarcode(".barcode").init();
+    try {
+        const typeValue = document.getElementById("type").value;
+        const valueInput = document.getElementById("value").value;
+        const fontBold = document.getElementById("fontBold");
+        const fontItalic = document.getElementById("fontItalic");
+        const selectedFont = fontBold.checked ? fontBold.value : fontItalic.checked ? fontItalic.value : "";
+        svgElement.setAttribute("jsbarcode-format", typeValue);
+        svgElement.setAttribute("jsbarcode-value", valueInput);
+        svgElement.setAttribute("jsbarcode-textmargin", "10");
+        svgElement.setAttribute("jsbarcode-fontoptions", selectedFont);
+        svgElementP.setAttribute("jsbarcode-format", typeValue);
+        svgElementP.setAttribute("jsbarcode-value", valueInput);
+        svgElementP.setAttribute("jsbarcode-textmargin", "10");
+        svgElementP.setAttribute("jsbarcode-fontoptions", selectedFont);
+        JsBarcode(".barcode").init();
+    } catch (error) {
+        Swal.fire('Nilai yang dimasukan tidak sesuai dengan Tipe Barcode')
+    }
 });
 
 
@@ -76,9 +104,38 @@ changeAttributesButton.addEventListener("click", function() {
         ctx.drawImage(img,0,0);
         const imgData = canvas.toDataURL("image/png");
         pdf.addImage(imgData, "PNG", 10, 10, 100, 60); // Menyesuaikan posisi dan ukuran
-        pdf.save("barcode.pdf");
+        const typeValue = document.getElementById("type").value;
+        const valueInput = document.getElementById("value").value;
+        pdf.save(`Barcode ${typeValue} ${valueInput}.pdf`);
         };
     })
+
+    const downloadJpg = document.querySelector("#downloadJpg").addEventListener("click", function() {
+        svgElement.style.display = "block";
+        const svgElementData = new XMLSerializer().serializeToString(svgElement);
+        const canvas = document.createElement("canvas");
+        const svgSize = svgElement.getBoundingClientRect();
+
+        canvas.width = svgSize.width;
+        canvas.height = svgSize.height;
+
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0);
+            const imgDataUrl = canvas.toDataURL("image/jpeg");
+
+            // Trigger download
+            const a = document.createElement("a");
+            a.href = imgDataUrl;
+            a.download = "barcode.jpg";
+            a.click();
+        };
+
+        img.src = "data:image/svg+xml;base64," + btoa(svgElementData);
+        svgElement.style.display = "none";
+    });
     
 </script>
 </html>
